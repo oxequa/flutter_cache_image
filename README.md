@@ -1,5 +1,5 @@
 
-# Flutter Cache image
+# Flutter Cache Image
 
 A flutter library to cache network images. This package support the download of images from a common url or from a firebase storage url. 
 
