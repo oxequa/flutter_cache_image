@@ -245,7 +245,9 @@ class _CacheImage extends State<CacheImage> {
   @override
   Widget build(BuildContext context) {
     return new AnimatedCrossFade(
-      firstChild: widget.placeholder,
+      firstChild: widget.placeholder != null
+        ? widget.placeholder
+        : Container(height: 0.0, width: 0.0),
       secondChild: filePath != null
         ? Image.asset(
           filePath,
