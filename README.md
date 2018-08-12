@@ -54,3 +54,10 @@ return CacheImage.firebase(
   )
 )
  ```
+ 
+## API
+
+- Widget Placeholder - Widget to display when online image isn't in cache
+- String Prefix - String used to parse gs firebase storage path.
+- Duration Duration - Animation duration between placeholder and image.
+- String Path - Firebase/Network image path.
