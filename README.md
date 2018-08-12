@@ -27,7 +27,7 @@ CacheImage widget can be used in two different way:
 
 ###### Standard network image path
 
-```
+``` dart
 return CacheImage.network(
   path: 'image_url_path',
   placeholder: new Container(
@@ -42,7 +42,7 @@ return CacheImage.network(
  
 ###### Firebase network image path
 
-```
+``` dart
 return CacheImage.firebase(
   path: 'gs_url_path',
   placeholder: new Container(
