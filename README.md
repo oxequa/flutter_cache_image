@@ -3,7 +3,7 @@
 
 A flutter library to cache network images. This package support the download of images from a standard *network url* and from a *firebase gs* storage url. 
 
-This package only depend on flutter firebase storage, there are no others external dependencies.  
+This package depends only on the flutter firebase storage library; there are no others external dependencies. 
 
 Images are stored in the app temporary directory.
 
