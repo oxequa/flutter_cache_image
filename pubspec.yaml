@@ -1,17 +1,21 @@
 name: cache_image
 description: A new flutter package project.
 version: 0.0.1
-author:
-homepage:
+author: Alessio Pracchia <pracchia@oxequa.com>
+homepage: https://github.com/oxequa/flutter_cache_image
+
+
+environment:
+  sdk: ">=1.19.0 < 3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  firebase_storage: ^1.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  firebase_storage: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
