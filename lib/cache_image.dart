@@ -230,8 +230,7 @@ class _CacheImage extends State<CacheImage> {
     }
   }
 
-  @override
-  void initState() {
+  void parse() {
     check(widget.path).then((result) {
       if (result.length > 0) {
         setState(() {
@@ -239,6 +238,21 @@ class _CacheImage extends State<CacheImage> {
         });
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(CacheImage oldWidget) {
+    if(oldWidget.path != widget.path) {
+      setState(() {
+        parse();
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    parse();
     super.initState();
   }
 
