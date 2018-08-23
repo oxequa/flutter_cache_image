@@ -232,7 +232,7 @@ class _CacheImage extends State<CacheImage> {
 
   void parse() {
     check(widget.path).then((result) {
-      if (result.length > 0) {
+      if (result.length > 0 && this.mounted) {
         setState(() {
           filePath = result;
         });
