@@ -243,9 +243,7 @@ class _CacheImage extends State<CacheImage> {
   @override
   void didUpdateWidget(CacheImage oldWidget) {
     if(oldWidget.path != widget.path) {
-      setState(() {
-        parse();
-      });
+      parse();
     }
     super.didUpdateWidget(oldWidget);
   }
