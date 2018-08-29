@@ -30,7 +30,8 @@ class CacheImage extends StatefulWidget {
     this.centerSlice,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
-    this.duration = const Duration(milliseconds: 200),
+    this.duration = const Duration(milliseconds: 500),
+    this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 1,
        assert(path != null),
@@ -50,7 +51,8 @@ class CacheImage extends StatefulWidget {
     this.centerSlice,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
-    this.duration = const Duration(milliseconds: 200),
+    this.duration = const Duration(milliseconds: 500),
+    this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 2,
        assert(path != null),
@@ -68,8 +70,11 @@ class CacheImage extends StatefulWidget {
   /// Widget displayed while image is loading.
   final Widget placeholder;
 
-  /// Widget displayed while image is loading.
+  /// Widget displayed while image is loading from network.
   final Duration duration;
+
+  /// Widget displayed while image is loading from local.
+  final Duration durationLocal;
 
   /// If non-null, require the image to have this width.
   ///
@@ -182,30 +187,8 @@ class CacheImage extends StatefulWidget {
 class _CacheImage extends State<CacheImage> {
 
   String filePath;
+  Duration duration = Duration(milliseconds: 300);
   final Directory tempDir = Directory.systemTemp;
-
-  Future<String> check (String path) async {
-    switch (widget.type){
-      case 1:
-        var splitted = widget.path.split(widget.prefix);
-        var local = tempDir.path + splitted[splitted.length - 1];
-        return File(local).length().then((length) {
-          return local;
-        }).catchError((err) async {
-          return await firebase(splitted[splitted.length - 1]);
-        });
-        break;
-      case 2:
-        var splitted = widget.path.split('/');
-        var local = tempDir.path + splitted[splitted.length - 1];
-        return File(local).length().then((length) {
-          return local;
-        }).catchError((err) async {
-          return await network(path);
-        });
-        break;
-    }
-  }
 
   Future<String> network(String path) async {
     HttpClient httpClient = new HttpClient();
@@ -231,12 +214,40 @@ class _CacheImage extends State<CacheImage> {
   }
 
   void parse() {
-    check(widget.path).then((result) {
-      if (result.length > 0 && this.mounted) {
-        setState(() {
-          filePath = result;
-        });
+    String local;
+    List<String> splitted;
+    switch (widget.type){
+      case 1:
+        splitted = widget.path.split(widget.prefix);
+        local = tempDir.path + splitted[splitted.length - 1];
+        break;
+      case 2:
+        splitted = widget.path.split('/');
+        local = tempDir.path + splitted[splitted.length - 1];
+        break;
+    }
+    File(local).length().then((length){
+      duration = widget.durationLocal;
+      update(local);
+    }).catchError((err){
+      switch(widget.type){
+        case 1:
+          firebase(splitted[splitted.length - 1]).then((result){
+            update(result);
+          });
+          break;
+        case 2:
+          network(widget.path).then((result){
+            update(result);
+          });
+          break;
       }
+    });
+  }
+
+  void update(String path) {
+    setState(() {
+      filePath = path;
     });
   }
 
@@ -250,6 +261,7 @@ class _CacheImage extends State<CacheImage> {
 
   @override
   void initState() {
+    duration = widget.duration;
     parse();
     super.initState();
   }
@@ -277,7 +289,7 @@ class _CacheImage extends State<CacheImage> {
       crossFadeState: filePath == null
         ? CrossFadeState.showFirst
         : CrossFadeState.showSecond,
-      duration: widget.duration
+      duration: duration
     );
   }
 }
