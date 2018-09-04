@@ -246,9 +246,11 @@ class _CacheImage extends State<CacheImage> {
   }
 
   void update(String path) {
-    setState(() {
-      filePath = path;
-    });
+    if (this.mounted) {
+      setState(() {
+        filePath = path;
+      });
+    }
   }
 
   @override
