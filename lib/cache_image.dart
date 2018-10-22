@@ -34,8 +34,8 @@ class CacheImage extends StatefulWidget {
     this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 1,
-       assert(path != null),
-       super(key: key);
+        assert(path != null),
+        super(key: key);
 
   CacheImage.network({
     Key key,
@@ -55,8 +55,8 @@ class CacheImage extends StatefulWidget {
     this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 2,
-       assert(path != null),
-       super(key: key);
+        assert(path != null),
+        super(key: key);
 
   /// Widget displayed while image is loading.
   final String path;
@@ -197,12 +197,14 @@ class _CacheImage extends State<CacheImage> {
     var bytes = await consolidateHttpClientResponseBytes(response);
     var split = path.split('/');
     File file = new File(tempDir.path + split[split.length - 1]);
+    file.create(recursive: true);
     await file.writeAsBytes(bytes);
     return file.path;
   }
 
   Future<String> firebase(String path) async {
     var file = File(tempDir.path + path);
+    file.create(recursive: true);
     var ref = FirebaseStorage.instance.ref().child(path);
     var download = ref.writeToFile(file);
     var bytes = (await download.future).totalByteCount;
@@ -271,27 +273,27 @@ class _CacheImage extends State<CacheImage> {
   @override
   Widget build(BuildContext context) {
     return new AnimatedCrossFade(
-      firstChild: widget.placeholder != null
-        ? widget.placeholder
-        : Container(height: 0.0, width: 0.0),
-      secondChild: filePath != null
-        ? Image.asset(
-          filePath,
-          height: widget.height,
-          width: widget.width,
-          color: widget.color,
-          colorBlendMode: widget.colorBlendMode,
-          fit: widget.fit,
-          alignment: widget.alignment,
-          repeat: widget.repeat,
-          centerSlice: widget.centerSlice,
-          matchTextDirection: widget.matchTextDirection,
-          gaplessPlayback: widget.gaplessPlayback)
-        : new Container(height: 0.0, width: 0.0),
-      crossFadeState: filePath == null
-        ? CrossFadeState.showFirst
-        : CrossFadeState.showSecond,
-      duration: duration
+        firstChild: widget.placeholder != null
+            ? widget.placeholder
+            : Container(height: 0.0, width: 0.0),
+        secondChild: filePath != null
+            ? Image.asset(
+            filePath,
+            height: widget.height,
+            width: widget.width,
+            color: widget.color,
+            colorBlendMode: widget.colorBlendMode,
+            fit: widget.fit,
+            alignment: widget.alignment,
+            repeat: widget.repeat,
+            centerSlice: widget.centerSlice,
+            matchTextDirection: widget.matchTextDirection,
+            gaplessPlayback: widget.gaplessPlayback)
+            : new Container(height: 0.0, width: 0.0),
+        crossFadeState: filePath == null
+            ? CrossFadeState.showFirst
+            : CrossFadeState.showSecond,
+        duration: duration
     );
   }
 }
