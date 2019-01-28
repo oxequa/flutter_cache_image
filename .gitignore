@@ -3,7 +3,7 @@
 
 .packages
 .pub/
-
+.flutter-plugins
 build/
 idea/
 ios/.generated/

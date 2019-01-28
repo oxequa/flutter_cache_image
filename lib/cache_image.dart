@@ -31,7 +31,7 @@ class CacheImage extends StatefulWidget {
     this.centerSlice,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
-    this.duration = const Duration(milliseconds: 500),
+    this.duration = const Duration(milliseconds: 300),
     this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 1,
@@ -52,7 +52,7 @@ class CacheImage extends StatefulWidget {
     this.centerSlice,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
-    this.duration = const Duration(milliseconds: 500),
+    this.duration = const Duration(milliseconds: 300),
     this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 2,
@@ -188,8 +188,50 @@ class CacheImage extends StatefulWidget {
 class _CacheImage extends State<CacheImage> {
 
   String filePath;
-  Duration duration = Duration(milliseconds: 200);
-  final Directory tempDir = getTemporaryDirectory();
+  Directory tempDir;
+  bool transition = true;
+
+  void parse() async {
+    String local;
+    List<String> splitted;
+    tempDir =  await getTemporaryDirectory();
+
+    switch (widget.type){
+      case 1:
+        splitted = widget.path.split(widget.prefix);
+        local = tempDir.path + splitted[splitted.length - 1];
+        break;
+      case 2:
+        splitted = widget.path.split('/');
+        local = tempDir.path + splitted[splitted.length - 1];
+        break;
+    }
+    File(local).length().then((length){
+      update(local);
+    }).catchError((err){
+      switch(widget.type){
+        case 1:
+          firebase(splitted[splitted.length - 1]).then((result){
+            update(result);
+          });
+          break;
+        case 2:
+          network(widget.path).then((result){
+            update(result);
+          });
+          break;
+      }
+    });
+  }
+
+  void update(String path) {
+    if (this.mounted) {
+      setState(() {
+        transition = false;
+        filePath = path;
+      });
+    }
+  }
 
   Future<String> network(String path) async {
     HttpClient httpClient = new HttpClient();
@@ -216,44 +258,10 @@ class _CacheImage extends State<CacheImage> {
     }
   }
 
-  void parse() {
-    String local;
-    List<String> splitted;
-    switch (widget.type){
-      case 1:
-        splitted = widget.path.split(widget.prefix);
-        local = tempDir.path + splitted[splitted.length - 1];
-        break;
-      case 2:
-        splitted = widget.path.split('/');
-        local = tempDir.path + splitted[splitted.length - 1];
-        break;
-    }
-    File(local).length().then((length){
-      duration = widget.durationLocal;
-      update(local);
-    }).catchError((err){
-      switch(widget.type){
-        case 1:
-          firebase(splitted[splitted.length - 1]).then((result){
-            update(result);
-          });
-          break;
-        case 2:
-          network(widget.path).then((result){
-            update(result);
-          });
-          break;
-      }
-    });
-  }
-
-  void update(String path) {
-    if (this.mounted) {
-      setState(() {
-        filePath = path;
-      });
-    }
+  @override
+  void initState() {
+    parse();
+    super.initState();
   }
 
   @override
@@ -262,13 +270,6 @@ class _CacheImage extends State<CacheImage> {
       parse();
     }
     super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void initState() {
-    duration = widget.duration;
-    parse();
-    super.initState();
   }
 
   @override
@@ -294,7 +295,7 @@ class _CacheImage extends State<CacheImage> {
         crossFadeState: filePath == null
             ? CrossFadeState.showFirst
             : CrossFadeState.showSecond,
-        duration: duration
+        duration: transition ? widget.duration : widget.durationLocal
     );
   }
 }
