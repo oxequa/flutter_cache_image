@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 /*
@@ -187,8 +188,8 @@ class CacheImage extends StatefulWidget {
 class _CacheImage extends State<CacheImage> {
 
   String filePath;
-  Duration duration = Duration(milliseconds: 300);
-  final Directory tempDir = Directory.systemTemp;
+  Duration duration = Duration(milliseconds: 200);
+  final Directory tempDir = getTemporaryDirectory();
 
   Future<String> network(String path) async {
     HttpClient httpClient = new HttpClient();
@@ -275,9 +276,9 @@ class _CacheImage extends State<CacheImage> {
     return new AnimatedCrossFade(
         firstChild: widget.placeholder != null
             ? widget.placeholder
-            : Container(height: 0.0, width: 0.0),
+            : Container(height: widget.height, width: widget.width),
         secondChild: filePath != null
-            ? Image.asset(
+            ? new Image.asset(
             filePath,
             height: widget.height,
             width: widget.width,
@@ -289,7 +290,7 @@ class _CacheImage extends State<CacheImage> {
             centerSlice: widget.centerSlice,
             matchTextDirection: widget.matchTextDirection,
             gaplessPlayback: widget.gaplessPlayback)
-            : new Container(height: 0.0, width: 0.0),
+            : new Container(height: widget.height, width: widget.width),
         crossFadeState: filePath == null
             ? CrossFadeState.showFirst
             : CrossFadeState.showSecond,
