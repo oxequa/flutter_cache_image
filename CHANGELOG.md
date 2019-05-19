@@ -1,6 +1,5 @@
 ## [0.0.3]
 Dependencies updated
-
 Bug fix
 
 ## [0.0.2]

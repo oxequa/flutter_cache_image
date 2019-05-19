@@ -13,7 +13,7 @@ Add to pubspec.yaml:
 
 ```
 dependencies:
-  cache_image: "^0.0.2"
+  cache_image: "^0.0.3"
 
 ```
 Add it to your dart file:
