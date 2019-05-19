@@ -4,13 +4,14 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 /*
  *  ImageCache for Flutter
  *
- *  Copyright (c) 2018 Oxequa - Alessio Pracchia
+ *  Copyright (c) 2019 Oxequa - Alessio Pracchia
  *
  *  Released under MIT License.
  */
@@ -29,10 +30,10 @@ class CacheImage extends StatefulWidget {
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.centerSlice,
+    this.foregroundDecoration,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
     this.duration = const Duration(milliseconds: 300),
-    this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 1,
         assert(path != null),
@@ -47,13 +48,13 @@ class CacheImage extends StatefulWidget {
     this.color,
     this.colorBlendMode,
     this.fit,
+    this.foregroundDecoration,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.centerSlice,
     this.matchTextDirection = false,
     this.gaplessPlayback = false,
     this.duration = const Duration(milliseconds: 300),
-    this.durationLocal = const Duration(milliseconds: 0),
     @required this.path,
   }) : type = 2,
         assert(path != null),
@@ -73,9 +74,6 @@ class CacheImage extends StatefulWidget {
 
   /// Widget displayed while image is loading from network.
   final Duration duration;
-
-  /// Widget displayed while image is loading from local.
-  final Duration durationLocal;
 
   /// If non-null, require the image to have this width.
   ///
@@ -180,6 +178,9 @@ class CacheImage extends StatefulWidget {
   /// (false), when the image provider changes.
   final bool gaplessPlayback;
 
+  /// BoxDecoration filter to apply over the image
+  final BoxDecoration foregroundDecoration;
+
 
   @override
   State<StatefulWidget> createState() => new _CacheImage();
@@ -189,6 +190,7 @@ class _CacheImage extends State<CacheImage> {
 
   String filePath;
   Directory tempDir;
+  bool validator = false;
   bool transition = true;
 
   void parse() async {
@@ -227,10 +229,23 @@ class _CacheImage extends State<CacheImage> {
   void update(String path) {
     if (this.mounted) {
       setState(() {
-        transition = false;
         filePath = path;
+        transition = false;
+        validate();
       });
     }
+  }
+
+  void validate() {
+    rootBundle.load(filePath).then((value) {
+      setState(() {
+        validator = true;
+      });
+    }).catchError((_) {
+      setState(() {
+        validator = false;
+      });
+    });
   }
 
   Future<String> network(String path) async {
@@ -275,27 +290,37 @@ class _CacheImage extends State<CacheImage> {
   @override
   Widget build(BuildContext context) {
     return new AnimatedCrossFade(
-        firstChild: widget.placeholder != null
-            ? widget.placeholder
-            : Container(height: widget.height, width: widget.width),
-        secondChild: filePath != null
+      firstChild: new Container(
+        height: widget.height,
+        width: widget.width,
+        child: widget.placeholder,
+      ),
+      secondChild: new Container(
+        height: widget.height,
+        width: widget.width,
+        foregroundDecoration: widget.foregroundDecoration,
+        child: filePath == null
+          ? null
+          : validator
             ? new Image.asset(
-            filePath,
-            height: widget.height,
-            width: widget.width,
-            color: widget.color,
-            colorBlendMode: widget.colorBlendMode,
-            fit: widget.fit,
-            alignment: widget.alignment,
-            repeat: widget.repeat,
-            centerSlice: widget.centerSlice,
-            matchTextDirection: widget.matchTextDirection,
-            gaplessPlayback: widget.gaplessPlayback)
-            : new Container(height: widget.height, width: widget.width),
-        crossFadeState: filePath == null
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
-        duration: transition ? widget.duration : widget.durationLocal
+              filePath,
+              height: widget.height,
+              width: widget.width,
+              fit: widget.fit,
+              color: widget.color,
+              colorBlendMode: widget.colorBlendMode,
+              alignment: widget.alignment,
+              repeat: widget.repeat,
+              centerSlice: widget.centerSlice,
+              matchTextDirection: widget.matchTextDirection,
+              gaplessPlayback: widget.gaplessPlayback
+            )
+            : widget.placeholder
+      ),
+      crossFadeState: filePath == null
+        ? CrossFadeState.showFirst
+        : CrossFadeState.showSecond,
+      duration: transition ? widget.duration : new Duration(milliseconds: 0)
     );
   }
 }

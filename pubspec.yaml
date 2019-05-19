@@ -1,6 +1,6 @@
 name: cache_image
-description: A new flutter package project.
-version: 0.0.2
+description: Flutter cache network images. Support to network and firebase paths.
+version: 0.0.3
 author: Alessio Pracchia <pracchia@oxequa.com>
 homepage: https://github.com/oxequa/flutter_cache_image
 
@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_storage: ^1.0.4
-  path_provider: ^0.5.0
+  firebase_storage: ^3.0.0
+  path_provider: ^1.1.0
 
 dev_dependencies:
   flutter_test:
