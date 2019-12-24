@@ -1,6 +1,8 @@
 
 # Flutter Cache Image
 
+[![pub package](https://img.shields.io/pub/v/cache_image.svg)](https://pub.dartlang.org/packages/cache_image)
+
 A flutter library to download and cache images. This package supports the download of images from a standard *network path* and from a *firebase storage path*. 
 
 This package depends only on Flutter firebase storage and path provider; there are no other external dependencies. 
