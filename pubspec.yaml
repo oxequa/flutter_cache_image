@@ -1,6 +1,6 @@
 name: cache_image
-description: Cache your network images and firebase storage images with a download re-try loop if it fails.
-version: 1.0.2
+description: Flutter plugin to load and cache network or firebase storage images with a retry mechanism if the download fails.
+version: 1.0.4
 homepage: https://github.com/oxequa/flutter_cache_image
 
 

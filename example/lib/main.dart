@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FadeInImage(
                     fit: BoxFit.cover,
                     placeholder: AssetImage('assets/placeholder.png'),
-                    image: CacheImage('https://hd.tudocdn.net/874944?w=646&h=284')
+                    image: CacheImage('https://hd.tudocdn.net/874944?w=646&h=284', duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10))
                   ),
                 ),
                 Positioned(

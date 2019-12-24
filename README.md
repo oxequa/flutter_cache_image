@@ -3,22 +3,23 @@
 
 [![pub package](https://img.shields.io/pub/v/cache_image.svg)](https://pub.dartlang.org/packages/cache_image)
 
-A flutter library to download and cache images. This package supports the download of images from a standard *network path* and from a *firebase storage path*. 
+A Flutter plugin to load and cache network or firebase storage images with a retry mechanism if the download fails.
+ 
+This package supports the download of images from a standard *network path* and from a *firebase storage gs path*. 
 
-This package depends only on Flutter firebase storage and path provider; there are no other external dependencies. 
+Images are stored in the temporary directory of the app.
 
-Images are stored ok the temporary directory of the app.
+## Usage
 
-## How to add
-
-Add to pubspec.yaml:
+To use this plugin, add firebase_storage as a dependency in your pubspec.yaml file.
 
 ```
 dependencies:
-  cache_image: "^1.0.0"
+  cache_image: "^1.0.4"
 
 ```
-Add it to a dart file:
+
+Import cache_image in a dart file:
 ```
 import 'package:cache_image/cache_image.dart';
 ```
@@ -27,7 +28,7 @@ To support firebase storage download the generated google-services.json file and
 
 ## How to use
 
-CacheImage can be used with any widget that requires an image as ImageProvider. Check example app for a live sample.
+Cache Image can be used with any widget that support an ImageProvider.
 
 ``` dart
 Image(
@@ -36,7 +37,12 @@ Image(
 ),
 Image(
     fit: BoxFit.cover,
-    image: CacheImage('https://your-website.com/image.png'),
+    image:  CacheImage('https://hd.tudocdn.net/874944?w=646&h=284', duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
+),
+FadeInImage(
+    fit: BoxFit.cover,
+    placeholder: AssetImage('assets/placeholder.png'),
+    image: CacheImage('gs://your-project.appspot.com/image.jpg')
 )
  ```
 

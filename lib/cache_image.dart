@@ -22,9 +22,11 @@ class CacheImage extends ImageProvider<CacheImage> {
     String url, {
     this.scale = 1.0,
     this.cache = true,
-    this.retry = const Duration(milliseconds: 500),
+    this.duration = const Duration(seconds: 1),
+    this.durationMultiplier = 1.5,
+    this.durationExpiration = const Duration(seconds: 10),
   })  : assert(url != null),
-        _resource = Resource(url);
+        _resource = Resource(url, duration, durationMultiplier, durationExpiration);
 
   /// The scale to place in the [ImageInfo] object of the image.
   final double scale;
@@ -32,20 +34,30 @@ class CacheImage extends ImageProvider<CacheImage> {
   /// Enable or disable image caching.
   final bool cache;
 
-  /// Retry duration if download fails. Retry duration can be only set for the network image.
-  final Duration retry;
+  /// Retry duration if download fails.
+  final Duration duration;
+
+  /// Retry duration multiplier.
+  final double durationMultiplier;
+
+  /// Retry duration expiration.
+  final Duration durationExpiration;
 
   Resource _resource;
 
   Future<Codec> _fetchImage() async {
+    Uint8List file;
     await _resource.init();
     final bool check = await _resource.checkFile();
     if (check) {
-      final Uint8List file = await _resource.getFile();
+      file = await _resource.getFile();
+    } else {
+      file = await _resource.storeFile();
+    }
+    if(file.length > 0) {
       return PaintingBinding.instance.instantiateImageCodec(file);
     }
-    final Uint8List file = await _resource.storeFile();
-    return PaintingBinding.instance.instantiateImageCodec(file);
+    return null;
   }
 
   @override
@@ -56,12 +68,14 @@ class CacheImage extends ImageProvider<CacheImage> {
   @override
   ImageStreamCompleter load(CacheImage key, DecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
-        codec: key._fetchImage(),
-        scale: key.scale,
-        informationCollector: () sync* {
-          yield DiagnosticsProperty<ImageProvider>(
-              'Image provider: $this \n Image key: $key', this,
-              style: DiagnosticsTreeStyle.errorProperty);
-        });
+      codec: key._fetchImage(),
+      scale: key.scale,
+      informationCollector: () sync* {
+        yield DiagnosticsProperty<ImageProvider>(
+          'Image provider: $this \n Image key: $key', this,
+          style: DiagnosticsTreeStyle.errorProperty
+        );
+      }
+    );
   }
 }

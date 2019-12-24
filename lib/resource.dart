@@ -8,13 +8,22 @@ import 'package:path_provider/path_provider.dart';
 
 class Resource {
   final String uri;
+  final Duration duration;
+  final double durationMultiplier;
+  final Duration durationExpiration;
 
   Uri _temp;
   Uri _local;
   Uri _remote;
-  Duration _duration = Duration(milliseconds: 0);
+  Duration _retry;
 
-  Resource(this.uri) : assert(uri != null);
+  Resource(
+    this.uri,
+    this.duration,
+    this.durationMultiplier,
+    this.durationExpiration
+  ) : assert(uri != null),
+      _retry = duration;
 
   Uri get remote => _remote;
   Uri get temp => _temp;
@@ -56,27 +65,27 @@ class Resource {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
     if (_remote.scheme == 'gs') {
-      print(_remote.path);
-      final StorageReference ref =
-          FirebaseStorage.instance.ref().child(_remote.path);
+      final StorageReference ref = FirebaseStorage.instance.ref().child(_remote.path);
       final dynamic url = await ref.getDownloadURL();
       _remote = Uri.parse(url);
     }
     // Download file with retry
     while (file.lengthSync() <= 0) {
-      await Future.delayed(_duration).then((_) async {
+      await Future.delayed(_retry).then((_) async {
         try {
           HttpClient httpClient = new HttpClient();
           final HttpClientRequest request = await httpClient.getUrl(_remote);
           final HttpClientResponse response = await request.close();
-          final Uint8List bytes = await consolidateHttpClientResponseBytes(
-              response,
-              autoUncompress: false);
+          final Uint8List bytes = await consolidateHttpClientResponseBytes(response, autoUncompress: false);
           file = await file.writeAsBytes(bytes);
         } catch (err) {
-          _duration = Duration(milliseconds: 2500);
+          _retry += _retry * this.durationMultiplier;
         }
       });
+      // Check duration expiration
+      if(_retry > this.durationExpiration) {
+        break;
+      }
     }
     return file.readAsBytesSync();
   }

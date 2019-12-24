@@ -1,3 +1,12 @@
+## 1.0.4
+
+* Doc updated
+* Retry mechanism improved
+
+## 1.0.3
+
+* Code format
+
 ## 1.0.2
 
 * Pub badge
