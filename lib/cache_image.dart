@@ -18,19 +18,20 @@ import 'package:cache_image/resource.dart';
  */
 
 class CacheImage extends ImageProvider<CacheImage> {
-
   CacheImage(
     String url, {
-      this.scale = 1.0,
-      this.cache = true,
-      this.retry = const Duration(milliseconds: 500),
-    }) : assert(url != null),
-         _resource = Resource(url);
+    this.scale = 1.0,
+    this.cache = true,
+    this.retry = const Duration(milliseconds: 500),
+  })  : assert(url != null),
+        _resource = Resource(url);
 
   /// The scale to place in the [ImageInfo] object of the image.
   final double scale;
+
   /// Enable or disable image caching.
   final bool cache;
+
   /// Retry duration if download fails. Retry duration can be only set for the network image.
   final Duration retry;
 
@@ -39,7 +40,7 @@ class CacheImage extends ImageProvider<CacheImage> {
   Future<Codec> _fetchImage() async {
     await _resource.init();
     final bool check = await _resource.checkFile();
-    if(check) {
+    if (check) {
       final Uint8List file = await _resource.getFile();
       return PaintingBinding.instance.instantiateImageCodec(file);
     }
@@ -55,16 +56,12 @@ class CacheImage extends ImageProvider<CacheImage> {
   @override
   ImageStreamCompleter load(CacheImage key, DecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
-      codec: key._fetchImage(),
-      scale: key.scale,
-      informationCollector: () sync* {
-        yield DiagnosticsProperty<ImageProvider>(
-          'Image provider: $this \n Image key: $key',
-          this,
-          style: DiagnosticsTreeStyle.errorProperty
-        );
-      }
-    );
+        codec: key._fetchImage(),
+        scale: key.scale,
+        informationCollector: () sync* {
+          yield DiagnosticsProperty<ImageProvider>(
+              'Image provider: $this \n Image key: $key', this,
+              style: DiagnosticsTreeStyle.errorProperty);
+        });
   }
-
 }

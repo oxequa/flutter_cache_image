@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Resource {
-
   final String uri;
 
   Uri _temp;
@@ -15,8 +14,7 @@ class Resource {
   Uri _remote;
   Duration _duration = Duration(milliseconds: 0);
 
-  Resource(this.uri)
-      : assert(uri != null);
+  Resource(this.uri) : assert(uri != null);
 
   Uri get remote => _remote;
   Uri get temp => _temp;
@@ -40,7 +38,7 @@ class Resource {
 
   Future<bool> checkFile() async {
     final File file = File(_local.path);
-    if(file.existsSync() && file.lengthSync() > 0) {
+    if (file.existsSync() && file.lengthSync() > 0) {
       return true;
     }
     return false;
@@ -48,7 +46,7 @@ class Resource {
 
   Future<Uint8List> getFile() async {
     final File file = File(_local.path);
-    if(file.existsSync() && file.lengthSync() > 0) {
+    if (file.existsSync() && file.lengthSync() > 0) {
       return file.readAsBytesSync();
     }
     return null;
@@ -57,21 +55,23 @@ class Resource {
   Future<Uint8List> storeFile() async {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
-    if(_remote.scheme == 'gs') {
+    if (_remote.scheme == 'gs') {
       print(_remote.path);
-     final StorageReference ref = FirebaseStorage.instance.ref().child(_remote.path);
-     final dynamic url = await ref.getDownloadURL();
-     _remote = Uri.parse(url);
+      final StorageReference ref =
+          FirebaseStorage.instance.ref().child(_remote.path);
+      final dynamic url = await ref.getDownloadURL();
+      _remote = Uri.parse(url);
     }
     // Download file with retry
-    while(file.lengthSync() <= 0) {
+    while (file.lengthSync() <= 0) {
       await Future.delayed(_duration).then((_) async {
         try {
           HttpClient httpClient = new HttpClient();
           final HttpClientRequest request = await httpClient.getUrl(_remote);
           final HttpClientResponse response = await request.close();
           final Uint8List bytes = await consolidateHttpClientResponseBytes(
-              response, autoUncompress: false);
+              response,
+              autoUncompress: false);
           file = await file.writeAsBytes(bytes);
         } catch (err) {
           _duration = Duration(milliseconds: 2500);
