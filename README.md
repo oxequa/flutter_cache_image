@@ -1,11 +1,11 @@
 
 # Flutter Cache Image
 
-A flutter library to cache network images. This package support the download of images from a standard *network url* and from a *firebase gs* storage url. 
+A flutter library to download and cache images. This package supports the download of images from a standard *network path* and from a *firebase storage path*. 
 
-This package depends only on the flutter firebase storage library; there are no others external dependencies. 
+This package depends only on Flutter firebase storage and path provider; there are no other external dependencies. 
 
-Images are stored in the app temporary directory.
+Images are stored ok the temporary directory of the app.
 
 ## How to add
 
@@ -13,51 +13,27 @@ Add to pubspec.yaml:
 
 ```
 dependencies:
-  cache_image: "^0.0.3"
+  cache_image: "^1.0.0"
 
 ```
-Add it to your dart file:
+Add it to a dart file:
 ```
 import 'package:cache_image/cache_image.dart';
 ```
 
+To support firebase storage download the generated google-services.json file and place it inside android/app. Next, modify the android/build.gradle file and the android/app/build.gradle file to add the Google services plugin as described by the Firebase assistant. 
+
 ## How to use
 
-CacheImage widget can be used in two different way: 
-
-###### Standard network image path
+CacheImage can be used with any widget that requires an image as ImageProvider. Check example app for a live sample.
 
 ``` dart
-return CacheImage.network(
-  path: 'image_url_path',
-  placeholder: new Container(
-    padding: EdgeInsets.all(16.0),
-    color: Colors.grey[100],
-    child: new Center(
-      child: new Image.asset('image_asset_path'),
-    ),
-  )
+Image(
+    fit: BoxFit.cover,
+    image: CacheImage('gs://your-project.appspot.com/image.png'),
+),
+Image(
+    fit: BoxFit.cover,
+    image: CacheImage('https://your-website.com/image.png'),
 )
  ```
- 
-###### Firebase network image path
-
-``` dart
-return CacheImage.firebase(
-  path: 'gs_url_path',
-  placeholder: new Container(
-    padding: EdgeInsets.all(16.0),
-    color: Colors.grey[100],
-    child: new Center(
-      child: new Image.asset('image_asset_path'),
-    ),
-  )
-)
- ```
- 
-## API
-
-- Widget Placeholder - Widget to display when online image isn't in cache
-- String Prefix - String used to parse gs firebase storage path.
-- Duration Duration - Animation duration between placeholder and image.
-- String Path - Firebase/Network image path.
