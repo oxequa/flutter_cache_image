@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Doc updated
+* Example updated
+
 ## 1.0.0
 
 * Stable release

@@ -1,6 +1,6 @@
 name: cache_image
 description: Flutter cache network images. Support to network and firestorage image path.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/oxequa/flutter_cache_image
 
 
