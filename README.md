@@ -37,3 +37,5 @@ Image(
     image: CacheImage('https://your-website.com/image.png'),
 )
  ```
+
+See the `example` directory for a complete sample app using Cache Image.
