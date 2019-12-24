@@ -18,12 +18,9 @@ class Resource {
   Duration _retry;
 
   Resource(
-    this.uri,
-    this.duration,
-    this.durationMultiplier,
-    this.durationExpiration
-  ) : assert(uri != null),
-      _retry = duration;
+      this.uri, this.duration, this.durationMultiplier, this.durationExpiration)
+      : assert(uri != null),
+        _retry = duration;
 
   Uri get remote => _remote;
   Uri get temp => _temp;
@@ -65,7 +62,8 @@ class Resource {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
     if (_remote.scheme == 'gs') {
-      final StorageReference ref = FirebaseStorage.instance.ref().child(_remote.path);
+      final StorageReference ref =
+          FirebaseStorage.instance.ref().child(_remote.path);
       final dynamic url = await ref.getDownloadURL();
       _remote = Uri.parse(url);
     }
@@ -76,14 +74,16 @@ class Resource {
           HttpClient httpClient = new HttpClient();
           final HttpClientRequest request = await httpClient.getUrl(_remote);
           final HttpClientResponse response = await request.close();
-          final Uint8List bytes = await consolidateHttpClientResponseBytes(response, autoUncompress: false);
+          final Uint8List bytes = await consolidateHttpClientResponseBytes(
+              response,
+              autoUncompress: false);
           file = await file.writeAsBytes(bytes);
         } catch (err) {
           _retry += _retry * this.durationMultiplier;
         }
       });
       // Check duration expiration
-      if(_retry > this.durationExpiration) {
+      if (_retry > this.durationExpiration) {
         break;
       }
     }

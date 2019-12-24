@@ -15,7 +15,7 @@ To use this plugin, add firebase_storage as a dependency in your pubspec.yaml fi
 
 ```
 dependencies:
-  cache_image: "^1.0.4"
+  cache_image: "^1.0.5"
 
 ```
 

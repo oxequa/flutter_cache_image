@@ -1,12 +1,12 @@
 name: cache_image
 description: Flutter plugin to load and cache network or firebase storage images with a retry mechanism if the download fails.
-version: 1.0.4
+version: 1.0.5
 homepage: https://github.com/oxequa/flutter_cache_image
 
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5 <2.0.0"
+  flutter: ">=1.12.13 <2.0.0"
 
 dependencies:
   flutter:

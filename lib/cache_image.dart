@@ -26,7 +26,8 @@ class CacheImage extends ImageProvider<CacheImage> {
     this.durationMultiplier = 1.5,
     this.durationExpiration = const Duration(seconds: 10),
   })  : assert(url != null),
-        _resource = Resource(url, duration, durationMultiplier, durationExpiration);
+        _resource =
+            Resource(url, duration, durationMultiplier, durationExpiration);
 
   /// The scale to place in the [ImageInfo] object of the image.
   final double scale;
@@ -54,7 +55,7 @@ class CacheImage extends ImageProvider<CacheImage> {
     } else {
       file = await _resource.storeFile();
     }
-    if(file.length > 0) {
+    if (file.length > 0) {
       return PaintingBinding.instance.instantiateImageCodec(file);
     }
     return null;
@@ -68,14 +69,12 @@ class CacheImage extends ImageProvider<CacheImage> {
   @override
   ImageStreamCompleter load(CacheImage key, DecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
-      codec: key._fetchImage(),
-      scale: key.scale,
-      informationCollector: () sync* {
-        yield DiagnosticsProperty<ImageProvider>(
-          'Image provider: $this \n Image key: $key', this,
-          style: DiagnosticsTreeStyle.errorProperty
-        );
-      }
-    );
+        codec: key._fetchImage(),
+        scale: key.scale,
+        informationCollector: () sync* {
+          yield DiagnosticsProperty<ImageProvider>(
+              'Image provider: $this \n Image key: $key', this,
+              style: DiagnosticsTreeStyle.errorProperty);
+        });
   }
 }
