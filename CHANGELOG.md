@@ -1,3 +1,8 @@
+## 1.0.2
+
+* Pub badge
+* Package description update
+
 ## 1.0.1
 
 * Doc updated
