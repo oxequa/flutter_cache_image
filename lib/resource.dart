@@ -38,7 +38,8 @@ class Resource {
   Future<Resource> init() async {
     _temp = await _getTempDir();
     _remote = _parse(uri);
-    _local = _parse(_temp.path + '/' + _remote.path.hashCode.toString());
+    _local = _parse(_temp.path + '/' + _remote.hashCode.toString());
+
     return this;
   }
 
