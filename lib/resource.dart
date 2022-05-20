@@ -62,56 +62,30 @@ class Resource {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
     if (_remote.scheme == 'gs') {
-      //final dynamic url = await ref.getDownloadURL();
-      print("START DOWNLOAD");
-      await firebase_storage.FirebaseStorage.instance.refFromURL(_remote.path).getDownloadURL().then((url) async {
-        print("DOWNLOADIMG URL: $url");
-        _remote = Uri.parse(url);
-        // Download file with retry
-        while (file.lengthSync() <= 0) {
-          await Future.delayed(_retry).then((_) async {
-            try {
-              HttpClient httpClient = new HttpClient();
-              final HttpClientRequest request = await httpClient.getUrl(_remote);
-              final HttpClientResponse response = await request.close();
-              final Uint8List bytes = await consolidateHttpClientResponseBytes(
-                  response,
-                  autoUncompress: false);
-              file = await file.writeAsBytes(bytes);
-            } catch (err) {
-              _retry += _retry * this.durationMultiplier;
-            }
-          });
-          // Check duration expiration
-          if (_retry > this.durationExpiration) {
-            break;
-          }
-        }
-        return file.readAsBytesSync();
-      });
-    }else{
-      // Download file with retry
-      while (file.lengthSync() <= 0) {
-        await Future.delayed(_retry).then((_) async {
-          try {
-            HttpClient httpClient = new HttpClient();
-            final HttpClientRequest request = await httpClient.getUrl(_remote);
-            final HttpClientResponse response = await request.close();
-            final Uint8List bytes = await consolidateHttpClientResponseBytes(
-                response,
-                autoUncompress: false);
-            file = await file.writeAsBytes(bytes);
-          } catch (err) {
-            _retry += _retry * this.durationMultiplier;
-          }
-        });
-        // Check duration expiration
-        if (_retry > this.durationExpiration) {
-          break;
-        }
-      }
-      return file.readAsBytesSync();
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.refFromURL(_remote.path);
+      String _myUrl = await ref.getDownloadURL();
+      _remote = Uri.parse(_myUrl.toString());
     }
-
+    // Download file with retry
+    while (file.lengthSync() <= 0) {
+      await Future.delayed(_retry).then((_) async {
+        try {
+          HttpClient httpClient = new HttpClient();
+          final HttpClientRequest request = await httpClient.getUrl(_remote);
+          final HttpClientResponse response = await request.close();
+          final Uint8List bytes = await consolidateHttpClientResponseBytes(
+              response,
+              autoUncompress: false);
+          file = await file.writeAsBytes(bytes);
+        } catch (err) {
+          _retry += _retry * this.durationMultiplier;
+        }
+      });
+      // Check duration expiration
+      if (_retry > this.durationExpiration) {
+        break;
+      }
+    }
+    return file.readAsBytesSync();
   }
 }
