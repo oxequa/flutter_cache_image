@@ -2,9 +2,9 @@ library cache_image;
 
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Resource {
   final String uri;
@@ -62,10 +62,11 @@ class Resource {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
     if (_remote.scheme == 'gs') {
-      final StorageReference ref =
-          FirebaseStorage.instance.ref().child(_remote.path);
-      final dynamic url = await ref.getDownloadURL();
-      _remote = Uri.parse(url);
+      //final dynamic url = await ref.getDownloadURL();
+      await firebase_storage.FirebaseStorage.instance.refFromURL(_remote.path).getDownloadURL().then((url) async {
+        print(url);
+        _remote = Uri.parse(url);
+      });
     }
     // Download file with retry
     while (file.lengthSync() <= 0) {

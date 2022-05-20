@@ -5,14 +5,13 @@ homepage: https://github.com/oxequa/flutter_cache_image
 
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.13 <2.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  firebase_storage: ^3.1.0
-  path_provider: ^1.5.1
+  firebase_storage: ^10.2.16
+  path_provider: ^2.0.10
 
 dev_dependencies:
   flutter_test:
