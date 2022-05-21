@@ -1,10 +1,25 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cache_image/cache_image.dart';
 import 'package:path_provider/path_provider.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: '',
+        appId: '',
+        messagingSenderId: '',
+        projectId: '',
+        authDomain: "",
+        storageBucket: "",
+      )
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -90,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FadeInImage(
                     fit: BoxFit.cover,
                     placeholder: AssetImage('assets/placeholder.png'),
-                    image: CacheImage('gs://testing-9ea12.appspot.com/bake-1706051_1920.jpg')
+                    image: CacheImage('gs://q-tumin.appspot.com/companies/tumin/tumin_90x90.png')
                   ),
                 ),
                 Positioned(

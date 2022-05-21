@@ -26,6 +26,10 @@ dependencies:
   cache_image:
     path: ../
 
+
+  firebase_core: ^1.17.0
+  firebase_storage: ^10.2.16
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

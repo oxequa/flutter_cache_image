@@ -62,9 +62,9 @@ class Resource {
     File file = await File(_local.path).create(recursive: true);
     // Check FireStorage scheme
     if (_remote.scheme == 'gs') {
-      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.refFromURL(_remote.path);
-      String _myUrl = await ref.getDownloadURL();
-      _remote = Uri.parse(_myUrl.toString());
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref().child(_remote.path);
+      final dynamic url = await ref.getDownloadURL();
+      _remote = Uri.parse(url);
     }
     // Download file with retry
     while (file.lengthSync() <= 0) {
